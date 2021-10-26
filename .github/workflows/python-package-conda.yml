@@ -1,0 +1,42 @@
+# This workflow will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Python package
+
+on: 
+  push:
+   branches: [ master ]
+  pull_request:
+   branches: [ master ]
+  workflow_dispatch:
+  schedule:
+   - cron: "0 21 * * *" 
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set time zone
+        run: sudo timedatectl set-timezone 'Asia/Shanghai'
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      # You can test your matrix by printing the current Python version
+      - name: install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          sudo chmod +x ./chromedriver && chromium-browser --version
+      - name: Run
+        env:
+          Cookie: ${{secrets.Cookie}}
+        run: |
+          python ./test2.py ${Cookie}
